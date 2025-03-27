@@ -5,6 +5,7 @@ import GameScene from "./scenes/GameScene";
 import ShopScene from "./scenes/ShopScene";
 import GameOverScene from "./scenes/GameOverScene";
 import PauseScene from "./scenes/PauseScene";
+import LoadingScene from "./scenes/LoadingScene";
 import { GAME_WIDTH, GAME_HEIGHT } from "./config/gameConfig";
 import { VolumeConfig } from "./config/volumeConfig";
 
@@ -23,7 +24,14 @@ const config = {
       debug: false,
     },
   },
-  scene: [MainMenu, GameScene, ShopScene, GameOverScene, PauseScene],
+  scene: [
+    LoadingScene,
+    MainMenu,
+    GameScene,
+    ShopScene,
+    GameOverScene,
+    PauseScene,
+  ],
   parent: "app",
 };
 
