@@ -1,10 +1,16 @@
 import Phaser from "phaser";
 import { CENTER_X, CENTER_Y } from "../config/gameConfig";
 import { GameUI } from "../components/GameUI";
+import { VolumeConfig } from "../config/volumeConfig";
 
 export default class GameOverScene extends Phaser.Scene {
   constructor() {
     super("GameOverScene");
+  }
+
+  preload() {
+    // Load the game over sound
+    this.load.audio("gameOver", "sounds/game-over.mp3");
   }
 
   create(data) {
@@ -28,6 +34,21 @@ export default class GameOverScene extends Phaser.Scene {
       "RETURN TO MENU",
       "32px"
     );
+
+    // Create the game over sound
+    const gameOverSound = this.sound.add("gameOver", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Listen for SFX volume changes
+    this.events.on(VolumeConfig.VOLUME_CHANGE_EVENT, (type, value) => {
+      if (type === "sfx") {
+        gameOverSound.setVolume(value / 100);
+      }
+    });
+
+    // Play the game over sound
+    gameOverSound.play();
 
     // Handle button click
     menuButton.on("pointerdown", () => {

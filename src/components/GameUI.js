@@ -129,7 +129,7 @@ export class GameUI {
     volumePanel.fillRect(x, y, 250, 300);
 
     // Add volume controls
-    this.createVolumeControl("Ambience", x + 20, y + 50);
+    this.createVolumeControl("BGM", x + 20, y + 50);
     this.createVolumeControl("SFX", x + 20, y + 150);
 
     return volumePanel;

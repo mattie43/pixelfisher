@@ -6,10 +6,16 @@ import {
   CENTER_Y,
 } from "../config/gameConfig";
 import { GameUI } from "../components/GameUI";
+import { VolumeConfig } from "../config/volumeConfig";
 
 export default class PauseScene extends Phaser.Scene {
   constructor() {
     super("PauseScene");
+  }
+
+  preload() {
+    // Load the button press sound
+    this.load.audio("buttonPress", "sounds/pressing-button.mp3");
   }
 
   create() {
@@ -45,19 +51,34 @@ export default class PauseScene extends Phaser.Scene {
       "32px"
     );
 
+    // Create the button press sound
+    const buttonSound = this.sound.add("buttonPress", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Listen for SFX volume changes
+    this.events.on(VolumeConfig.VOLUME_CHANGE_EVENT, (type, value) => {
+      if (type === "sfx") {
+        buttonSound.setVolume(value / 100);
+      }
+    });
+
     // Add button functionality
     closeButton.on("pointerdown", () => {
+      buttonSound.play();
       this.scene.resume("GameScene");
       this.scene.stop();
     });
 
     menuButton.on("pointerdown", () => {
+      buttonSound.play();
       this.scene.stop("GameScene");
       this.scene.start("MainMenu");
     });
 
     // Add ESC key handler to close pause menu
     this.input.keyboard.on("keydown-ESC", () => {
+      buttonSound.play();
       this.scene.resume("GameScene");
       this.scene.stop();
     });

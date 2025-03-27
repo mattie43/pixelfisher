@@ -6,10 +6,16 @@ import {
   CENTER_Y,
 } from "../config/gameConfig";
 import { GameUI } from "../components/GameUI";
+import { VolumeConfig } from "../config/volumeConfig";
 
 export default class MainMenu extends Phaser.Scene {
   constructor() {
     super("MainMenu");
+  }
+
+  preload() {
+    // Load the button press sound
+    this.load.audio("buttonPress", "sounds/pressing-button.mp3");
   }
 
   create() {
@@ -52,7 +58,20 @@ export default class MainMenu extends Phaser.Scene {
       "#4a9f45"
     );
 
+    // Create the button press sound
+    const buttonSound = this.sound.add("buttonPress", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Listen for SFX volume changes
+    this.events.on(VolumeConfig.VOLUME_CHANGE_EVENT, (type, value) => {
+      if (type === "sfx") {
+        buttonSound.setVolume(value / 100);
+      }
+    });
+
     startButton.on("pointerdown", () => {
+      buttonSound.play();
       this.scene.start("GameScene");
     });
   }

@@ -4,6 +4,7 @@ import Fish from "../entities/Fish";
 import gsap from "gsap";
 import { FISH_TYPES } from "../config/fishConfig";
 import { GameUI } from "../components/GameUI";
+import { VolumeConfig } from "../config/volumeConfig";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -56,6 +57,13 @@ export default class GameScene extends Phaser.Scene {
         fishType.size.height
       );
     });
+
+    // Load the opening shop sound
+    this.load.audio("openingShop", "sounds/opening-shop.mp3");
+    // Load the fishing line snapping sound
+    this.load.audio("lineSnapping", "sounds/fishing-line-snapping.mp3");
+    // Load the catching fish sound
+    this.load.audio("catchingFish", "sounds/catching-fish.mp3");
   }
 
   create() {
@@ -166,13 +174,6 @@ export default class GameScene extends Phaser.Scene {
     );
 
     // Add shop button in top right
-    // const shopButton = gameUI
-    //   .createText(GAME_WIDTH - 20, 20, "SHOP", "32px")
-    //   .setOrigin(1, 0)
-    //   .setInteractive({ useHandCursor: true })
-    //   .setBackgroundColor("#4a9f45")
-    //   .setPadding(20, 10);
-
     const shopButton = gameUI.createBorderedButton(
       GAME_WIDTH - 80,
       40,
@@ -203,11 +204,43 @@ export default class GameScene extends Phaser.Scene {
       border.setAlpha(0.8);
     });
 
+    // Create the opening shop sound
+    this.shopSound = this.sound.add("openingShop", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Create the line snapping sound
+    const lineSnapSound = this.sound.add("lineSnapping", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Create the catching fish sound
+    const catchFishSound = this.sound.add("catchingFish", {
+      volume: VolumeConfig.getVolume("sfx") / 100,
+    });
+
+    // Listen for SFX volume changes
+    this.events.on(VolumeConfig.VOLUME_CHANGE_EVENT, (type, value) => {
+      if (type === "sfx") {
+        this.shopSound.setVolume(value / 100);
+        lineSnapSound.setVolume(value / 100);
+        catchFishSound.setVolume(value / 100);
+      }
+    });
+
     // Handle shop button click
     shopButton.on("pointerdown", () => {
+      // Get current volume from localStorage
+      const currentVolume = VolumeConfig.getVolume("sfx") / 100;
+      this.shopSound.setVolume(currentVolume);
+      this.shopSound.play();
       this.scene.pause();
       this.scene.launch("ShopScene", { gameScene: this });
     });
+
+    // Store the sounds for use in other methods
+    this.lineSnapSound = lineSnapSound;
+    this.catchFishSound = catchFishSound;
 
     // Enable debug graphics to see collision boxes
     this.physics.world.createDebugGraphic();
@@ -256,6 +289,11 @@ export default class GameScene extends Phaser.Scene {
       this.score += points;
       this.scoreText.setText("Score: " + this.score);
 
+      // Get current volume from localStorage and play the catching fish sound
+      const currentVolume = VolumeConfig.getVolume("sfx") / 100;
+      this.catchFishSound.setVolume(currentVolume);
+      this.catchFishSound.play();
+
       // Show floating score text
       this.showFloatingText(
         this.hook.x,
@@ -276,6 +314,11 @@ export default class GameScene extends Phaser.Scene {
     this.isLineBreaking = true;
     this.hook.setVisible(false);
     this.line.setVisible(false);
+
+    // Get current volume from localStorage and play the line snapping sound
+    const currentVolume = VolumeConfig.getVolume("sfx") / 100;
+    this.lineSnapSound.setVolume(currentVolume);
+    this.lineSnapSound.play();
 
     // Decrease spools count
     this.spools--;
