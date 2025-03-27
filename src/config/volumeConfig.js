@@ -29,6 +29,14 @@ export const VolumeConfig = {
     if (type === "bgm") {
       this.currentBGMVolume = value;
       localStorage.setItem("bgmVolume", value);
+      // Update any playing BGM volume
+      const game = window.game;
+      if (game && game.sound) {
+        const bgm = game.sound.get("bgm");
+        if (bgm) {
+          bgm.setVolume(value / 100);
+        }
+      }
     } else if (type === "sfx") {
       this.currentSFXVolume = value;
       localStorage.setItem("sfXVolume", value);

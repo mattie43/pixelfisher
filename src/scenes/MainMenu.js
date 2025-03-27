@@ -16,11 +16,20 @@ export default class MainMenu extends Phaser.Scene {
   preload() {
     // Load the button press sound
     this.load.audio("buttonPress", "sounds/pressing-button.mp3");
+    // Load the background music
+    this.load.audio("bgm", "sounds/bgm.mp3");
   }
 
   create() {
     // Create UI components
     const gameUI = new GameUI(this);
+
+    // Start the background music
+    const bgm = this.sound.add("bgm", {
+      loop: true,
+      volume: VolumeConfig.getVolume("bgm") / 100,
+    });
+    bgm.play();
 
     // Add title text
     gameUI

@@ -35,4 +35,5 @@ const config = {
   parent: "app",
 };
 
-new Phaser.Game(config);
+// Create and store the game instance globally
+window.game = new Phaser.Game(config);
